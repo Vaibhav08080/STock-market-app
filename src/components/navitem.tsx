@@ -10,12 +10,12 @@ const Navitem = () => {
   const isActive = (path: string) => pathname === path || pathname.startsWith(path + '/')
 
   return (
-    <ul className='flex flex-col sm:flex-row p-2 gap-3 sm:gap-10 font-medium'>
+    <ul className='flex flex-col sm:flex-row p-2 gap-1 sm:gap-10 font-medium divide-y divide-white/10 sm:divide-y-0'>
       {NAV_ITEMS.map(({ href, label }) => (
         <li key={href}>
           <Link
             href={href}
-            className={`hover:text-yellow-500 transition-colors ${isActive(href) ? 'text-gray-100' : ''}`}
+            className={`block py-2 hover:text-yellow-500 transition-colors ${isActive(href) ? 'text-gray-100' : ''}`}
             aria-current={isActive(href) ? 'page' : undefined}
           >
             {label}
