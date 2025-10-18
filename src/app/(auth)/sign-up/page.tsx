@@ -7,6 +7,9 @@ import SelectField from "@/components/forms/SelectField";
 import { INVESTMENT_GOALS, PREFERRED_INDUSTRIES, RISK_TOLERANCE_OPTIONS } from "@/lib/constant";
 import { CountrySelectField } from "@/components/forms/CountryComponent";
 import FooterLink from "@/components/forms/FooterLink";
+import { useRouter } from "next/navigation";
+import { toast } from "sonner";
+import { inngest } from "@/lib/inngest/client";
 const SignUp = () => {
   const {
     register,
@@ -25,11 +28,77 @@ const SignUp = () => {
     },
     mode: "onBlur",
   });
+  const router = useRouter();
   const Onsubmit = async (data: SignUpFormData) => {
+    console.log('[SIGNUP] Starting sign-up process with data:', data);
     try {
-      console.log(data);
+      console.log('[SIGNUP] Calling fetch to /api/auth/sign-up/email');
+      const response = await fetch('/api/auth/sign-up/email', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          email: data.email,
+          password: data.password,
+          name: data.fullName,
+        }),
+      });
+      
+      console.log('[SIGNUP] Response received:', { ok: response.ok, status: response.status, statusText: response.statusText });
+      
+      if (response.ok) {
+        console.log('[SIGNUP] Sign-up successful, sending Inngest event');
+        // Send Inngest event for welcome email
+        try {
+          await inngest.send({
+            name: "app/user.created",
+            data: {
+              email: data.email,
+              name: data.fullName,
+              country: data.country,
+              investmentGoals: data.investmentGoals,
+              riskTolerance: data.riskTolerance,
+              preferredIndustry: data.preferredIndustry,
+            },
+          });
+          console.log('[SIGNUP] Inngest event sent successfully');
+        } catch (inngestError) {
+          console.error('[SIGNUP] Inngest event failed:', inngestError);
+          // Don't block sign-up if email fails
+        }
+        
+        console.log('[SIGNUP] Showing success toast and redirecting');
+        toast.success("Account created successfully!");
+        router.push("/");
+      } else {
+        console.log('[SIGNUP] Sign-up failed, parsing error response');
+        let errorMessage = 'Sign up failed';
+        try {
+          const errorData = await response.json();
+          console.log('[SIGNUP] Error data from response:', errorData);
+          errorMessage = errorData?.message || errorData?.error || errorMessage;
+        } catch (e) {
+          console.error('[SIGNUP] Failed to parse error response as JSON:', e);
+          // Response might not be JSON
+          errorMessage = response.statusText || errorMessage;
+        }
+        console.log('[SIGNUP] Throwing error with message:', errorMessage);
+        throw new Error(errorMessage);
+      }
     } catch (error) {
-      console.log(error);
+      console.error('[SIGNUP] Caught error in try-catch:', error);
+      console.error('[SIGNUP] Error type:', typeof error);
+      console.error('[SIGNUP] Error instanceof Error:', error instanceof Error);
+      if (error && typeof error === 'object') {
+        console.error('[SIGNUP] Error keys:', Object.keys(error));
+        console.error('[SIGNUP] Error.message:', (error as any).message);
+        console.error('[SIGNUP] Error.error:', (error as any).error);
+      }
+      const description = error instanceof Error
+        ? error.message
+        : typeof error === "string"
+          ? error
+          : "Failed to create an account";
+      toast.error("Something went wrong", { description });
     }
   };
   return (

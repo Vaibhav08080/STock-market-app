@@ -1,10 +1,24 @@
 import React from 'react'
 import Header from '@/components/Header'
-
-const layout = ({children}: {children: React.ReactNode}) => {
+import { auth } from '@/lib/better-auth/auth'
+import { headers } from 'next/headers'
+import { redirect } from 'next/navigation'
+const layout = async ({children}: {children: React.ReactNode}) => {
+  const h = await headers()
+  const headerObj = Object.fromEntries(h.entries())
+  const session = await auth.api.getSession({ headers: headerObj })
+  if (!session?.user) {
+    return redirect("/sign-in")
+  }
+  const user = {
+    id:session.user.id,
+    email:session.user.email,
+    name:session.user.name,
+    
+  }
   return (
     <main className='min-h-screen text-gray-400'>
-        <Header />
+        <Header user={user}    />
         <div className='container py-10'>
             {children}
         </div>
