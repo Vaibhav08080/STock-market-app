@@ -4,7 +4,6 @@ import { useForm } from 'react-hook-form';
 import { Button } from '@/components/ui/button';
 import InputField from '@/components/forms/inputfield';
 import FooterLink from '@/components/forms/FooterLink';
-import { signInEmail } from "better-auth/api";
 import {toast} from "sonner";
 import {useRouter} from "next/navigation";
 
@@ -23,11 +22,42 @@ const SignIn = () => {
     });
 
     const onSubmit = async (data: SignInFormData) => {
+        console.log('[SIGNIN] Starting sign-in process');
+        console.log('[SIGNIN] Email:', data.email);
         try {
-            const result = await signInEmail({ body: { email: data.email, password: data.password } });
-            if(result) router.push('/');
+            console.log('[SIGNIN] Calling fetch to /api/auth/sign-in/email');
+            const response = await fetch('/api/auth/sign-in/email', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    email: data.email,
+                    password: data.password,
+                }),
+            });
+            
+            console.log('[SIGNIN] Response received:', { ok: response.ok, status: response.status, statusText: response.statusText });
+            
+            if (response.ok) {
+                console.log('[SIGNIN] Sign-in successful, redirecting to home');
+                toast.success('Signed in successfully!');
+                router.push('/');
+            } else {
+                console.log('[SIGNIN] Sign-in failed, parsing error response');
+                let errorMessage = 'Invalid email or password';
+                try {
+                    const errorData = await response.json();
+                    console.log('[SIGNIN] Error data from response:', errorData);
+                    errorMessage = errorData?.message || errorData?.error || errorMessage;
+                } catch (e) {
+                    console.error('[SIGNIN] Failed to parse error response as JSON:', e);
+                    errorMessage = response.statusText || errorMessage;
+                }
+                console.log('[SIGNIN] Showing error toast with message:', errorMessage);
+                toast.error('Sign in failed', { description: errorMessage });
+            }
         } catch (e) {
-            console.error(e);
+            console.error('[SIGNIN] Caught error in try-catch:', e);
+            console.error('[SIGNIN] Error type:', typeof e);
             toast.error('Sign in failed', {
                 description: e instanceof Error ? e.message : 'Failed to sign in.'
             })
