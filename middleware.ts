@@ -1,24 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getSessionCookie } from 'better-auth/cookies';
-import { auth } from '@/lib/better-auth/auth';
 
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
   try {
     // Edge-safe: rely on cookie presence to determine auth state
     const sessionCookie = await getSessionCookie(request);
-    let isLoggedIn = !!sessionCookie;
-
-    // Fallback: if cookie not detected, check via auth API using headers
-    if (!isLoggedIn) {
-      const headers = Object.fromEntries(request.headers.entries());
-      try {
-        const session = await auth.api.getSession({ headers });
-        isLoggedIn = !!session?.user;
-      } catch {
-        // ignore and treat as not logged in
-      }
-    }
+    const isLoggedIn = !!sessionCookie;
 
     // Auth routes handling
     if (pathname.startsWith('/sign-')) {
@@ -56,7 +44,7 @@ export async function middleware(request: NextRequest) {
 export const config = {
   matcher: [
     // Match all request paths except for these assets, and explicitly include auth routes
-    '/((?!api|_next/static|_next/image|favicon.ico|assets).*)',
+    '/((?!api|_next/static|_next/image|favicon.ico|assets|favicon.*\.ico).*)',
     '/sign-in',
     '/sign-up',
   ],
