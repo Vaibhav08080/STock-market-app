@@ -1,36 +1,67 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Signalist – Stock Market Dashboard
 
-## Getting Started
+Signalist is a modern stock market dashboard built with Next.js App Router. It features a fast command-palette search, TradingView widgets, watchlist UI, and a clean dark theme.
 
-First, run the development server:
+## Features
+- **Search palette**: Debounced search with manual trigger via `/api/search`.
+- **Home**: Market overview, heatmap, quotes, and timeline widgets.
+- **Stock details**: Symbol info, advanced candle/baseline charts, technical analysis, profile, and financials.
+- **Watchlist button**: Quick toggle per symbol (UI-only stub).
+- **Auth-ready middleware**: Edge-safe check based on auth cookie.
+- **SEO**: OpenGraph + Twitter cards with a cover image.
 
+## Tech stack
+- Next.js 15 (App Router, Turbopack)
+- TypeScript
+- TradingView embedded widgets
+- cmdk (command palette)
+
+## Getting started
+1. Install dependencies
+```bash
+npm i
+```
+2. Dev server
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+```
+3. Open http://localhost:3000
+
+## Environment variables
+Create `.env` with at least:
+```
+NEXT_PUBLIC_APP_URL=http://localhost:3000
+NEXT_PUBLIC_FINNHUB_API_KEY=your_key
+FINNHUB_API_KEY=your_key
+MONGODB_URI=your_mongodb_uri
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Scripts
+- `npm run dev` – start dev server
+- `npm run build` – build for production
+- `npm start` – run production server
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## SEO
+Global metadata is set in `src/app/layout.tsx`:
+- Title template, description, keywords
+- OpenGraph and Twitter with image
+- Robots and canonical
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+Cover image used:
+```
+https://res.cloudinary.com/dawvvzwyw/image/upload/v1760788029/WhatsApp_Image_2025-10-18_at_17.16.55_1cadd301_amqxpd.jpg
+```
 
-## Learn More
+## API
+- `GET /api/search?q=TERM` → `{ results: StockWithWatchlistStatus[] }`
 
-To learn more about Next.js, take a look at the following resources:
+## Deployment
+- Ensure env variables exist on the platform.
+- Middleware is edge-safe. If you need to disable auth redirects temporarily, adjust `matcher` in `middleware.ts`.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Troubleshooting
+- 500 `MIDDLEWARE_INVOCATION_FAILED`: make sure no server-only APIs are called in middleware.
+- Client import of server-only actions: use API routes from client components.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+---
+MIT License
