@@ -2,11 +2,15 @@ import React from 'react'
 import { Button } from '@/components/ui/button'
 import TradingViewWidget from '@/components/TradingView'
 import { MARKET_DATA_WIDGET_CONFIG, MARKET_OVERVIEW_WIDGET_CONFIG, TOP_STORIES_WIDGET_CONFIG } from '@/lib/constant'
+import SearchCommand from '@/components/SearchCommand'
+import { searchStocks } from '@/lib/actions/finnhub.actions'
 
-const Home = () => {
+const Home = async () => {
+  const initialStocks = await searchStocks()
   const scriptUrl = 'https://s3.tradingview.com/external-embedding/embed-widget-'
   return (
     <div className='flex min-h-screen home-wrapper'>
+      <SearchCommand renderAs='button' label='Search stocks' initialStocks={initialStocks} externalOnly />
       <section className='grid w-full gap-8 home-section'>
         <div className='md:col-span-1 xl:col-span-1'>
           <TradingViewWidget
