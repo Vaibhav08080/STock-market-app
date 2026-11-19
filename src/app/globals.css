@@ -487,3 +487,56 @@
 .scrollbar-hide-default::-webkit-scrollbar-thumb:hover {
   background-color: #9095A1;
 }
+/* ─── AI Strategy Lab (/backtest) — scoped to .strategy-lab, Signalist palette ─── */
+.strategy-lab {
+  --bg: #050505;
+  --bg2: #141414;
+  --bg3: #212328;
+  --bg4: #30333A;
+  --border: #30333A;
+  --line: #3a3d45;
+  --text: #f3f4f6;
+  --text2: #CCDADC;
+  --text3: #9095A1;
+  --teal: #0FEDBE;
+  --brand: #E8BA40;
+  --gain: #0FEDBE;
+  --loss: #FF495B;
+  --warn: #FF8243;
+  font-family: var(--font-geist-sans), system-ui, sans-serif;
+  font-size: 13px;
+  color: var(--text);
+  background: var(--bg);
+}
+.strategy-lab ::-webkit-scrollbar { width: 5px; height: 5px; }
+.strategy-lab ::-webkit-scrollbar-thumb { background: #30333A; border-radius: 3px; }
+.strategy-lab ::-webkit-scrollbar-track { background: transparent; }
+
+.strategy-lab .tab-bar { display: flex; gap: 1px; padding: 2px; background: var(--bg); border: 1px solid var(--border); border-radius: 6px; }
+.strategy-lab .tab-btn { display: flex; align-items: center; gap: 6px; padding: 6px 12px; font-size: 12px; font-weight: 600; border-radius: 4px; color: var(--text3); background: transparent; border: none; cursor: pointer; transition: all .15s; }
+.strategy-lab .tab-btn:hover { color: var(--text); background: rgba(255,255,255,0.04); }
+.strategy-lab .tab-btn.active { background: var(--bg3); color: #FDD458; box-shadow: 0 1px 3px rgba(0,0,0,.4); }
+
+.strategy-lab .btn-primary, .strategy-lab .btn-ghost { display: inline-flex; align-items: center; justify-content: center; gap: 6px; font-size: 12px; font-weight: 600; border-radius: 6px; cursor: pointer; transition: all .15s; padding: 6px 12px; }
+.strategy-lab .btn-primary { background: linear-gradient(180deg, #FDD458, #E8BA40); color: #0b0b0b; border: none; }
+.strategy-lab .btn-primary:hover { filter: brightness(1.08); }
+.strategy-lab .btn-primary:disabled { opacity: .45; cursor: default; filter: none; }
+.strategy-lab .btn-ghost { background: transparent; color: var(--text2); border: 1px solid var(--border); }
+.strategy-lab .btn-ghost:hover { color: #FDD458; border-color: rgba(232,186,64,.4); }
+.strategy-lab .btn-ghost:disabled { opacity: .45; cursor: default; }
+
+.strategy-lab .data-table { width: 100%; text-align: left; border-collapse: collapse; }
+.strategy-lab .data-table thead tr { border-bottom: 1px solid var(--border); background: var(--bg3); }
+.strategy-lab .data-table thead th { padding: 8px 12px; font-size: 10px; font-weight: 600; letter-spacing: .08em; text-transform: uppercase; color: var(--text3); white-space: nowrap; }
+.strategy-lab .data-table tbody tr { border-bottom: 1px solid rgba(48,51,58,.6); transition: background .1s; }
+.strategy-lab .data-table tbody tr:hover { background: rgba(255,255,255,.025); }
+.strategy-lab .data-table tbody td { padding: 9px 12px; font-size: 12px; color: var(--text2); }
+
+.strategy-lab .pill-gain, .strategy-lab .pill-loss, .strategy-lab .pill-neutral, .strategy-lab .pill-brand { display: inline-flex; align-items: center; gap: 4px; padding: 2px 8px; border-radius: 9999px; font-size: 11px; font-weight: 500; }
+.strategy-lab .pill-gain { background: rgba(15,237,190,.1); color: var(--gain); border: 1px solid rgba(15,237,190,.25); }
+.strategy-lab .pill-loss { background: rgba(255,73,91,.1); color: var(--loss); border: 1px solid rgba(255,73,91,.25); }
+.strategy-lab .pill-neutral { background: rgba(144,149,161,.1); color: var(--text2); border: 1px solid var(--border); }
+.strategy-lab .pill-brand { background: rgba(232,186,64,.12); color: #FDD458; border: 1px solid rgba(232,186,64,.25); }
+
+@keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+@keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: .2; } }

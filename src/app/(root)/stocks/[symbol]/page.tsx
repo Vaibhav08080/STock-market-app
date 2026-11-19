@@ -8,9 +8,12 @@ import {
   COMPANY_PROFILE_WIDGET_CONFIG,
   COMPANY_FINANCIALS_WIDGET_CONFIG,
 } from "@/lib/constant"
+import { resolveTradingViewSymbol } from "@/lib/tradingview"
 
 export default async function StockDetails({ params }: StockDetailsPageProps) {
   const { symbol } = await params
+  // exchange-qualified symbol (e.g. NASDAQ:AAPL) — bare tickers trigger TradingView's "Permission denied"
+  const tvSymbol = await resolveTradingViewSymbol(symbol)
   const scriptUrl = `https://s3.tradingview.com/external-embedding/embed-widget-`
 
   return (
@@ -19,21 +22,21 @@ export default async function StockDetails({ params }: StockDetailsPageProps) {
         <div className="flex flex-col gap-6">
           <TradingViewWidget
             scriptUrl={`${scriptUrl}symbol-info.js`}
-            config={SYMBOL_INFO_WIDGET_CONFIG(symbol)}
+            config={SYMBOL_INFO_WIDGET_CONFIG(tvSymbol)}
             className="custom-chart"
             height={170}
           />
 
           <TradingViewWidget
             scriptUrl={`${scriptUrl}advanced-chart.js`}
-            config={CANDLE_CHART_WIDGET_CONFIG(symbol)}
+            config={CANDLE_CHART_WIDGET_CONFIG(tvSymbol)}
             className="custom-chart"
             height={600}
           />
 
           <TradingViewWidget
             scriptUrl={`${scriptUrl}advanced-chart.js`}
-            config={BASELINE_WIDGET_CONFIG(symbol)}
+            config={BASELINE_WIDGET_CONFIG(tvSymbol)}
             className="custom-chart"
             height={600}
           />
@@ -46,21 +49,21 @@ export default async function StockDetails({ params }: StockDetailsPageProps) {
 
           <TradingViewWidget
             scriptUrl={`${scriptUrl}technical-analysis.js`}
-            config={TECHNICAL_ANALYSIS_WIDGET_CONFIG(symbol)}
+            config={TECHNICAL_ANALYSIS_WIDGET_CONFIG(tvSymbol)}
             className="custom-chart"
             height={400}
           />
 
           <TradingViewWidget
             scriptUrl={`${scriptUrl}company-profile.js`}
-            config={COMPANY_PROFILE_WIDGET_CONFIG(symbol)}
+            config={COMPANY_PROFILE_WIDGET_CONFIG(tvSymbol)}
             className="custom-chart"
             height={440}
           />
 
           <TradingViewWidget
             scriptUrl={`${scriptUrl}financials.js`}
-            config={COMPANY_FINANCIALS_WIDGET_CONFIG(symbol)}
+            config={COMPANY_FINANCIALS_WIDGET_CONFIG(tvSymbol)}
             className="custom-chart"
             height={464}
           />

@@ -25,22 +25,17 @@ export const sendSignupEmail = inngest.createFunction(
     try {
       console.log('[INNGEST] Generating personalized intro with AI...');
       const response = await step.ai.infer("generate-welcome-intro", {
-        model: step.ai.models.gemini({ model: "gemini-2.5-flash-lite" }),
+        model: step.ai.models.openai({
+          model: (process.env.OPENAI_MODEL || "gpt-4.1-mini") as "gpt-4.1-mini",
+          apiKey: process.env.OPENAI_API_KEY,
+        }),
         body: {
-          contents: [
-            {
-              role: "user",
-              parts: [
-                {
-                  text: PROMPT,
-                },
-              ],
-            },
-          ],
+          messages: [{ role: "user", content: PROMPT }],
+          max_completion_tokens: 600,
         },
       })
-      const part = response.candidates?.[0]?.content?.parts?.[0]
-      introText = (part && 'text' in part ? (part as any).text : null) || introText
+      const content = response.choices?.[0]?.message?.content
+      introText = (typeof content === "string" && content.trim()) || introText
       console.log('[INNGEST] AI intro generated successfully');
     } catch (e) {
       console.log('[INNGEST] AI generation failed, using default intro');
